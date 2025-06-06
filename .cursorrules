@@ -1,3 +1,45 @@
+# Sherlock Assistant Project Rules
+
+## 1. 코드 스타일 및 구조
+깔끔하고 유지보수하기 쉬운 구조를 유지한다.
+
+- TypeScript를 전면 사용하며, 명확한 타입 선언을 권장한다.
+- 컴포넌트는 모두 Named export를 기본으로 한다.
+- 상태는 전역 필요 시 Zustand, 지역 상태는 useState 또는 useReducer를 쓴다.
+- 디렉토리 구조는 다음 순서를 따른다: app → components → lib → store → types → styles
+- 모든 컴포넌트는 `/components`에 저장하며, 기능별로 폴더를 나눈다.
+
+## 2. UI/UX 규칙 (shadcn/ui + Tailwind)
+사용자 친화적이고 일관된 디자인을 유지한다.
+
+- 모든 UI는 가능한 shadcn/ui 컴포넌트를 먼저 사용한다.
+- Tailwind는 유틸리티 성격으로 shadcn 컴포넌트 커스터마이징에 사용한다.
+- UI 요소(Checkbox, Dialog, Tabs 등)는 별도 파일로 분리하여 재사용 가능하게 만든다.
+- 폰트 크기, 색상, 여백은 shadcn 테마에 맞춰 통일한다.
+
+## 3. 데이터 및 추론 로직
+셜록13 캐릭터 정보와 추리 알고리즘은 lib/에 구조화한다.
+
+- `lib/symbols.ts`에 캐릭터와 아이콘 정보 정리
+- `lib/deduction.ts`에 후보 소거 로직 함수 작성
+- 데이터 로직은 컴포넌트와 분리해서 재사용성과 테스트 용이성을 높인다.
+- 캐릭터 이름과 아이콘은 enum 혹은 const assertion으로 관리한다.
+
+## 4. 상태 관리 (Zustand)
+전역 게임 상태를 관리하고 UI에 연결한다.
+
+- `store/useGameStore.ts`에 zustand 스토어 정의
+- 상태는 불변성을 유지하며, immer 또는 구조 분해를 사용해 관리
+- 현재 손패, 질문 기록, 제거된 후보 상태 등은 store에 저장한다.
+
+## 5. 프로젝트 명세와 협업 규칙
+Cursor AI와 협업하며 맥락을 유지하기 위한 규칙.
+
+- 모든 컴포넌트와 함수에 JSDoc 주석을 작성한다.
+- 커서에게 함수 작성 요청 시 input/output 타입, 위치, UI 기대 형태를 명확히 설명한다.
+- 동작 흐름(예: 손패 입력 → 후보 자동 소거 → 추리 시도)을 커서에게 전체적으로 전달한다.
+- 변경 작업 시 관련 상태나 추론 로직의 영향 범위를 고려한다. 
+
 # 🕵️ Sherlock13 Helper Web App
 
 셜록13 보드게임을 위한 디지털 추리 도우미 웹 애플리케이션입니다.
