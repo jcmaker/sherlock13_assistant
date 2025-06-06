@@ -1,4 +1,4 @@
-# ��️ Sherlock13 Helper
+# 🕵️‍♂️ Sherlock13 Helper
 
 셜록13 보드게임을 위한 디지털 추리 도우미 웹 애플리케이션입니다.
 
