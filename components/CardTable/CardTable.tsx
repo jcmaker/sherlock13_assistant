@@ -38,36 +38,39 @@ export function CardTable({ onCardClick, selectedCards }: CardTableProps) {
   // 아이콘이 모두 사용되었는지 확인
   const isSymbolComplete = (icon: IconType): boolean => {
     const currentCount = getSymbolCount(icon);
+    if (currentCount >= SYMBOL_TOTALS[icon]) {
+      updateCheckToNumber(icon);
+    }
     return currentCount >= SYMBOL_TOTALS[icon];
   };
 
-  // 캐릭터가 내 카드에 있는지 확인
-  const isCharacterInMyCards = (character: Character): boolean => {
-    return myCards.some((card) => card.name === character.name);
-  };
+  // 체크 표시를 정확한 숫자로 업데이트
+  const updateCheckToNumber = (icon: IconType) => {
+    const players = Object.keys(symbolBoard);
+    let totalConfirmed = 0;
+    const checkedPlayers: string[] = [];
 
-  // 캐릭터의 모든 아이콘이 사용되었는지 확인
-  const areAllIconsUsed = (character: Character): boolean => {
-    return character.icons.every((icon) => isSymbolComplete(icon));
-  };
+    players.forEach((player) => {
+      const mark = symbolBoard[player]?.[icon];
+      if (typeof mark === "number") {
+        totalConfirmed += mark;
+      } else if (mark === "✔") {
+        checkedPlayers.push(player);
+      }
+    });
 
-  // 캐릭터가 제거 가능한지 확인
-  const isCharacterEliminated = (character: Character): boolean => {
-    return isCharacterInMyCards(character) || areAllIconsUsed(character);
-  };
+    const remainingCount = SYMBOL_TOTALS[icon] - totalConfirmed;
 
-  // 캐릭터가 제거 가능한 이유 계산
-  const getEliminationReason = (character: Character): string => {
-    if (isCharacterInMyCards(character)) {
-      return "내 카드에 있음";
+    // 체크 표시된 플레이어가 1명일 경우에만 업데이트
+    if (checkedPlayers.length === 1 && remainingCount > 0) {
+      const checkedPlayer = checkedPlayers[0];
+      const newSymbolBoard = { ...symbolBoard };
+      newSymbolBoard[checkedPlayer] = {
+        ...newSymbolBoard[checkedPlayer],
+        [icon]: remainingCount,
+      };
+      useGameStore.getState().setSymbolBoard(newSymbolBoard);
     }
-    if (areAllIconsUsed(character)) {
-      const usedIcons = character.icons.filter((icon) =>
-        isSymbolComplete(icon)
-      );
-      return `${usedIcons.join(", ")} 아이콘이 모두 사용됨`;
-    }
-    return "";
   };
 
   // 카드가 비활성화되어야 하는지 확인
@@ -107,7 +110,13 @@ export function CardTable({ onCardClick, selectedCards }: CardTableProps) {
             }}
           >
             <div className="flex justify-between items-start">
-              <h3 className="font-medium">{character.name}</h3>
+              <h3
+                className={`font-medium ${
+                  isDisabled ? "line-through text-red-500" : ""
+                }`}
+              >
+                {character.name}
+              </h3>
             </div>
             <div className="flex gap-2 mt-2">
               {character.icons.map((icon) => {
