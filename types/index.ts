@@ -13,7 +13,7 @@ export interface Character {
   icons: IconType[];
 }
 
-export type IconMark = "none" | "?" | "✔" | 1 | 2 | 3 | 4 | 5;
+export type IconMark = "none" | "?" | "✔" | "X" | 1 | 2 | 3 | 4 | 5;
 
 export interface SymbolBoard {
   [playerName: string]: {

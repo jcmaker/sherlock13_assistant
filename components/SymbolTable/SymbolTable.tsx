@@ -21,9 +21,10 @@ import { useGameStore } from "@/store/useGameStore";
 import { IconMark, IconType } from "@/types";
 
 const MARK_OPTIONS: { value: IconMark; label: string }[] = [
-  { value: "none", label: "없음" },
+  { value: "none", label: "-" },
   { value: "?", label: "?" },
   { value: "✔", label: "✔" },
+  { value: "X", label: "X" },
   { value: 1, label: "1" },
   { value: 2, label: "2" },
   { value: 3, label: "3" },
@@ -77,6 +78,8 @@ export function SymbolTable() {
         ? "?"
         : value === "✔"
         ? "✔"
+        : value === "X"
+        ? "X"
         : (parseInt(value) as 1 | 2 | 3 | 4 | 5);
 
     updateSymbolBoard(playerName, icon, markValue);

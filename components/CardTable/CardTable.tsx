@@ -18,45 +18,56 @@ export function CardTable({ onCardClick, selectedCards }: CardTableProps) {
   const symbolBoard = useGameStore((state) => state.symbolBoard);
 
   // 현재 사용된 아이콘 개수 계산
-  const getSymbolCount = (symbol: string) => {
-    // 내 카드에서 사용된 아이콘 개수
-    const myCardCount = myCards.reduce(
-      (count, card) =>
-        count + card.icons.filter((icon) => icon === symbol).length,
-      0
-    );
-    console.log(`My cards have ${symbol}: ${myCardCount}`);
+  const getSymbolCount = (icon: IconType): number => {
+    const players = Object.keys(symbolBoard);
+    let totalCount = 0;
+    let checkedCount = 0; // 체크 표시된 카운트
 
-    // 심볼 보드에서 사용된 아이콘 개수 (me 제외)
-    const boardCount = Object.entries(symbolBoard).reduce(
-      (count, [playerName, playerSymbols]) => {
-        if (playerName === "me") return count; // me는 이미 myCardCount에 포함됨
-        const mark = playerSymbols[symbol as IconType];
-        const value = typeof mark === "number" ? mark : 0;
-        console.log(`Player ${playerName} has ${symbol}: ${value}`);
-        return count + value;
-      },
-      0
-    );
+    players.forEach((player) => {
+      const mark = symbolBoard[player]?.[icon];
+      if (typeof mark === "number") {
+        totalCount += mark;
+      } else if (mark === "✔") {
+        checkedCount += 1; // 체크 표시는 최소 1개로 계산
+      }
+    });
 
-    const total = myCardCount + boardCount;
-    console.log(
-      `${symbol} total count: ${total} (myCards: ${myCardCount}, other players: ${boardCount})`
-    );
-    return total;
+    return totalCount + checkedCount;
   };
 
   // 아이콘이 모두 사용되었는지 확인
-  const isSymbolComplete = (symbol: string) => {
-    const currentCount = getSymbolCount(symbol);
-    const totalCount = SYMBOL_TOTALS[symbol as keyof typeof SYMBOL_TOTALS];
-    const isComplete = currentCount === totalCount;
-    console.log(
-      `${symbol} is ${
-        isComplete ? "complete" : "not complete"
-      } (${currentCount}/${totalCount})`
-    );
-    return isComplete;
+  const isSymbolComplete = (icon: IconType): boolean => {
+    const currentCount = getSymbolCount(icon);
+    return currentCount >= SYMBOL_TOTALS[icon];
+  };
+
+  // 캐릭터가 내 카드에 있는지 확인
+  const isCharacterInMyCards = (character: Character): boolean => {
+    return myCards.some((card) => card.name === character.name);
+  };
+
+  // 캐릭터의 모든 아이콘이 사용되었는지 확인
+  const areAllIconsUsed = (character: Character): boolean => {
+    return character.icons.every((icon) => isSymbolComplete(icon));
+  };
+
+  // 캐릭터가 제거 가능한지 확인
+  const isCharacterEliminated = (character: Character): boolean => {
+    return isCharacterInMyCards(character) || areAllIconsUsed(character);
+  };
+
+  // 캐릭터가 제거 가능한 이유 계산
+  const getEliminationReason = (character: Character): string => {
+    if (isCharacterInMyCards(character)) {
+      return "내 카드에 있음";
+    }
+    if (areAllIconsUsed(character)) {
+      const usedIcons = character.icons.filter((icon) =>
+        isSymbolComplete(icon)
+      );
+      return `${usedIcons.join(", ")} 아이콘이 모두 사용됨`;
+    }
+    return "";
   };
 
   // 카드가 비활성화되어야 하는지 확인
