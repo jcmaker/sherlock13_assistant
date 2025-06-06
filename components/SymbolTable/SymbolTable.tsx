@@ -19,6 +19,7 @@ import {
 import { ICONS, ICON_COMPONENTS } from "@/lib/symbols";
 import { useGameStore } from "@/store/useGameStore";
 import { IconMark, IconType } from "@/types";
+import { UserRoundPlus } from "lucide-react";
 
 const MARK_OPTIONS: { value: IconMark; label: string }[] = [
   { value: "none", label: "-" },
@@ -104,7 +105,9 @@ export function SymbolTable() {
   return (
     <div className="w-full overflow-auto">
       <div className="flex justify-end mb-4">
-        <Button onClick={handleAddPlayer}>플레이어 추가</Button>
+        <Button onClick={handleAddPlayer}>
+          <UserRoundPlus />
+        </Button>
       </div>
 
       <Table>

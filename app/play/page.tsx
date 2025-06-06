@@ -8,6 +8,7 @@ import { QuestionSuggestion } from "@/components/QuestionSuggestion/QuestionSugg
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/store/useGameStore";
+import { Pause, RefreshCcw } from "lucide-react";
 
 export default function PlayPage() {
   const router = useRouter();
@@ -29,10 +30,10 @@ export default function PlayPage() {
         <h1 className="text-2xl font-bold">셜록13 헬퍼</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleNewGame}>
-            카드 다시 선택
+            <RefreshCcw />
           </Button>
           <Button variant="destructive" onClick={handleEndGame}>
-            게임 종료
+            <Pause />
           </Button>
         </div>
       </div>

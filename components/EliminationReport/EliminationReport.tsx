@@ -1,9 +1,8 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { CHARACTERS, ICON_COMPONENTS } from "@/lib/symbols";
+import { CHARACTERS, SYMBOL_TOTALS } from "@/lib/symbols";
 import { useGameStore } from "@/store/useGameStore";
-import { IconType } from "@/types";
 
 interface EliminationReason {
   character: string;
@@ -12,20 +11,25 @@ interface EliminationReason {
 }
 
 export function EliminationReport() {
-  const { myCards, symbolBoard } = useGameStore();
+  const myCards = useGameStore((state) => state.myCards);
+  const symbolBoard = useGameStore((state) => state.symbolBoard);
 
-  // 캐릭터가 제거되어야 하는 이유 분석
   const getEliminationReasons = (): EliminationReason[] => {
     const reasons: EliminationReason[] = [];
 
+    // 내 카드에 있는 캐릭터 제거
+    myCards.forEach((card) => {
+      reasons.push({
+        character: card.name,
+        reason: "내 카드에 있음",
+        timestamp: Date.now(),
+      });
+    });
+
+    // 각 캐릭터의 아이콘 사용량 검사
     CHARACTERS.forEach((character) => {
-      // 내 카드에 있는 캐릭터는 제거
+      // 내 카드에 있는 캐릭터는 이미 처리됨
       if (myCards.some((card) => card.name === character.name)) {
-        reasons.push({
-          character: character.name,
-          reason: "내 카드에 포함된 캐릭터",
-          timestamp: Date.now(),
-        });
         return;
       }
 
@@ -35,7 +39,7 @@ export function EliminationReport() {
         const currentCount = Object.entries(symbolBoard).reduce(
           (count, [playerName, playerSymbols]) => {
             if (playerName === "me") return count;
-            const mark = playerSymbols[icon as IconType];
+            const mark = playerSymbols[icon];
             return count + (typeof mark === "number" ? mark : 0);
           },
           0
@@ -51,10 +55,10 @@ export function EliminationReport() {
         const iconCount = character.icons.filter((i) => i === icon).length;
 
         // 아이콘이 모두 사용되었는데, 이 캐릭터가 더 많은 아이콘을 필요로 하는 경우
-        if (totalCount === 5 && iconCount > 0) {
+        if (totalCount === SYMBOL_TOTALS[icon] && iconCount > 0) {
           reasons.push({
             character: character.name,
-            reason: `${icon} 아이콘이 모두 사용되었는데, 이 캐릭터는 ${iconCount}개의 ${icon}이 필요함`,
+            reason: `${icon} 아이콘이 모두 사용됨`,
             timestamp: Date.now(),
           });
         }
@@ -64,9 +68,9 @@ export function EliminationReport() {
     return reasons;
   };
 
-  const eliminationReasons = getEliminationReasons();
+  const reasons = getEliminationReasons();
 
-  if (eliminationReasons.length === 0) {
+  if (reasons.length === 0) {
     return null;
   }
 
@@ -74,7 +78,7 @@ export function EliminationReport() {
     <Card className="p-4">
       <h3 className="text-lg font-semibold mb-4">자동 소거 리포트</h3>
       <div className="space-y-3">
-        {eliminationReasons.map((reason, index) => (
+        {reasons.map((reason, index) => (
           <div
             key={`${reason.character}-${index}`}
             className="p-3 bg-muted rounded-lg"

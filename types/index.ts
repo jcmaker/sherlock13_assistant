@@ -4,7 +4,7 @@ export type IconType =
   | "Hand"
   | "Medal"
   | "Book"
-  | "Gem"
+  | "Necklace"
   | "Eye"
   | "Skull";
 

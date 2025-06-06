@@ -22,6 +22,7 @@ interface GameStore extends GameState {
     mark: IconMark
   ) => void;
   resetGame: () => void;
+  setSymbolBoard: (board: Record<string, Record<IconType, IconMark>>) => void;
 }
 
 const initialState: GameState = {
@@ -56,4 +57,5 @@ export const useGameStore = create<GameStore>((set) => ({
       },
     })),
   resetGame: () => set(initialState),
+  setSymbolBoard: (board) => set((state) => ({ ...state, symbolBoard: board })),
 }));

@@ -16,7 +16,7 @@ export const ICONS: IconType[] = [
   "Hand",
   "Medal",
   "Book",
-  "Gem",
+  "Necklace",
   "Eye",
   "Skull",
 ];
@@ -27,7 +27,7 @@ export const ICON_COMPONENTS = {
   Hand,
   Medal,
   Book,
-  Gem,
+  Necklace: Gem,
   Eye,
   Skull,
 } as const;
@@ -38,7 +38,7 @@ export const SYMBOL_TOTALS: Record<IconType, number> = {
   Hand: 5,
   Medal: 5,
   Book: 4,
-  Gem: 3,
+  Necklace: 3,
   Eye: 3,
   Skull: 3,
 };
@@ -54,7 +54,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     name: "Irene Adler",
-    icons: ["Skull", "Lightbulb", "Gem"],
+    icons: ["Skull", "Lightbulb", "Necklace"],
   },
   {
     name: "John Watson",
@@ -62,7 +62,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     name: "Mrs. Hudson",
-    icons: ["Cigarette", "Gem"],
+    icons: ["Cigarette", "Necklace"],
   },
   {
     name: "Inspector Lestrade",
@@ -74,7 +74,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     name: "Mary Morstan",
-    icons: ["Book", "Gem"],
+    icons: ["Book", "Necklace"],
   },
   {
     name: "Sebastian Moran",

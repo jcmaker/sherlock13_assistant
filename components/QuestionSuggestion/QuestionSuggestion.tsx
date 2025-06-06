@@ -52,6 +52,12 @@ export function QuestionSuggestion() {
     return unknownPlayers / players.length;
   };
 
+  // 플레이어의 체크된 아이콘 수 계산
+  const getCheckedIconsCount = (player: string): number => {
+    const playerMarks = symbolBoard[player] || {};
+    return Object.values(playerMarks).filter((mark) => mark === "✔").length;
+  };
+
   const getQuestionSuggestions = (): QuestionSuggestion[] => {
     const suggestions: QuestionSuggestion[] = [];
     const players = Object.keys(symbolBoard);
@@ -62,32 +68,34 @@ export function QuestionSuggestion() {
 
       const playerCompleteness = getPlayerInfoCompleteness(player);
       if (playerCompleteness < 1) {
-        // 가장 정보가 부족한 아이콘 찾기
-        const leastKnownIcon = ICONS.reduce((minIcon, currentIcon) => {
-          const currentMark = symbolBoard[player]?.[currentIcon];
-          const minMark = symbolBoard[player]?.[minIcon];
-          return (currentMark === "none" || currentMark === "?") &&
-            minMark !== "none" &&
-            minMark !== "?"
-            ? currentIcon
-            : minIcon;
-        });
+        // 가장 먼저 발견된 미확인 아이콘 선택
+        const leastKnownIcon = ICONS.find(
+          (icon) =>
+            symbolBoard[player]?.[icon] === "none" ||
+            symbolBoard[player]?.[icon] === "?"
+        );
 
-        // 체크 표시가 있는 경우 정확한 개수를 물어보는 것이 더 중요
-        const currentMark = symbolBoard[player]?.[leastKnownIcon];
-        const isChecked = currentMark === "✔";
+        if (leastKnownIcon) {
+          const currentMark = symbolBoard[player]?.[leastKnownIcon];
+          const isChecked = currentMark === "✔";
+          const checkedIconsCount = getCheckedIconsCount(player);
 
-        suggestions.push({
-          type: "player",
-          target: player,
-          icon: leastKnownIcon,
-          reason: isChecked
-            ? `${player}의 ${leastKnownIcon}이(가) 적어도 1개 이상 있으니 정확한 개수를 확인하세요`
-            : `${player}의 ${leastKnownIcon} 정보가 부족합니다`,
-          priority: isChecked
-            ? 1.5 - playerCompleteness
-            : 1 - playerCompleteness, // 체크된 경우 우선순위 높임
-        });
+          // 체크된 아이콘이 2개 이상이면 우선순위를 낮춤
+          const priorityMultiplier =
+            isChecked && checkedIconsCount >= 2 ? 1.1 : 1.2;
+
+          suggestions.push({
+            type: "player",
+            target: player,
+            icon: leastKnownIcon,
+            reason: isChecked
+              ? `${player}의 ${leastKnownIcon}이(가) 적어도 1개 이상 있으니 정확한 개수를 확인하세요`
+              : `${player}의 ${leastKnownIcon} 정보가 부족합니다`,
+            priority: isChecked
+              ? priorityMultiplier - playerCompleteness
+              : 1 - playerCompleteness,
+          });
+        }
       }
     });
 
